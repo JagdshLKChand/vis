@@ -17765,6 +17765,7 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.centerContainer = document.createElement('div');
     this.dom.leftContainer = document.createElement('div');
     this.dom.rightContainer = document.createElement('div');
+    this.dom.rightSecondContainer = document.createElement('div');
     this.dom.center = document.createElement('div');
     this.dom.left = document.createElement('div');
     this.dom.right = document.createElement('div');
