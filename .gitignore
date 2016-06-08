@@ -9,3 +9,11 @@ npm-debug.log
 # vim temporary files
 .*.sw[op]
 test/
+
+.DS_Store
+dist/.DS_Store
+docs/.DS_Store
+docs/timeline/.DS_Store
+examples/.DS_Store
+examples/timeline/.DS_Store
+misc/.DS_Store
