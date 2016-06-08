@@ -5,7 +5,7 @@
  * A dynamic, browser-based visualization library.
  *
  * @version 4.16.1
- * @date    2016-04-18
+ * @date    2016-06-08
  *
  * @license
  * Copyright (C) 2011-2016 Almende B.V, http://almende.com
@@ -11203,11 +11203,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.6 - 2015-12-23
+  var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.7 - 2016-04-22
    * http://hammerjs.github.io/
    *
-   * Copyright (c) 2015 Jorik Tangelder;
-   * Licensed under the  license */
+   * Copyright (c) 2016 Jorik Tangelder;
+   * Licensed under the MIT license */
   (function(window, document, exportName, undefined) {
     'use strict';
 
@@ -11335,7 +11335,7 @@ return /******/ (function(modules) { // webpackBootstrap
    * means that properties in dest will be overwritten by the ones in src.
    * @param {Object} dest
    * @param {Object} src
-   * @param {Boolean=false} [merge]
+   * @param {Boolean} [merge=false]
    * @returns {Object} dest
    */
   var extend = deprecate(function extend(dest, src, merge) {
@@ -11996,7 +11996,6 @@ return /******/ (function(modules) { // webpackBootstrap
       this.evEl = MOUSE_ELEMENT_EVENTS;
       this.evWin = MOUSE_WINDOW_EVENTS;
 
-      this.allow = true; // used by Input.TouchMouse to disable mouse events
       this.pressed = false; // mousedown state
 
       Input.apply(this, arguments);
@@ -12019,8 +12018,8 @@ return /******/ (function(modules) { // webpackBootstrap
               eventType = INPUT_END;
           }
 
-          // mouse must be down, and mouse events are allowed (see the TouchMouse input)
-          if (!this.pressed || !this.allow) {
+          // mouse must be down
+          if (!this.pressed) {
               return;
           }
 
@@ -12303,12 +12302,19 @@ return /******/ (function(modules) { // webpackBootstrap
    * @constructor
    * @extends Input
    */
+
+  var DEDUP_TIMEOUT = 2500;
+  var DEDUP_DISTANCE = 25;
+
   function TouchMouseInput() {
       Input.apply(this, arguments);
 
       var handler = bindFn(this.handler, this);
       this.touch = new TouchInput(this.manager, handler);
       this.mouse = new MouseInput(this.manager, handler);
+
+      this.primaryTouch = null;
+      this.lastTouches = [];
   }
 
   inherit(TouchMouseInput, Input, {
@@ -12322,17 +12328,15 @@ return /******/ (function(modules) { // webpackBootstrap
           var isTouch = (inputData.pointerType == INPUT_TYPE_TOUCH),
               isMouse = (inputData.pointerType == INPUT_TYPE_MOUSE);
 
-          // when we're in a touch event, so  block all upcoming mouse events
-          // most mobile browser also emit mouseevents, right after touchstart
-          if (isTouch) {
-              this.mouse.allow = false;
-          } else if (isMouse && !this.mouse.allow) {
+          if (isMouse && inputData.sourceCapabilities && inputData.sourceCapabilities.firesTouchEvents) {
               return;
           }
 
-          // reset the allowMouse when we're done
-          if (inputEvent & (INPUT_END | INPUT_CANCEL)) {
-              this.mouse.allow = true;
+          // when we're in a touch event, record touches to  de-dupe synthetic mouse event
+          if (isTouch) {
+              recordTouches.call(this, inputEvent, inputData);
+          } else if (isMouse && isSyntheticEvent.call(this, inputData)) {
+              return;
           }
 
           this.callback(manager, inputEvent, inputData);
@@ -12347,6 +12351,44 @@ return /******/ (function(modules) { // webpackBootstrap
       }
   });
 
+  function recordTouches(eventType, eventData) {
+      if (eventType & INPUT_START) {
+          this.primaryTouch = eventData.changedPointers[0].identifier;
+          setLastTouch.call(this, eventData);
+      } else if (eventType & (INPUT_END | INPUT_CANCEL)) {
+          setLastTouch.call(this, eventData);
+      }
+  }
+
+  function setLastTouch(eventData) {
+      var touch = eventData.changedPointers[0];
+
+      if (touch.identifier === this.primaryTouch) {
+          var lastTouch = {x: touch.clientX, y: touch.clientY};
+          this.lastTouches.push(lastTouch);
+          var lts = this.lastTouches;
+          var removeLastTouch = function() {
+              var i = lts.indexOf(lastTouch);
+              if (i > -1) {
+                  lts.splice(i, 1);
+              }
+          };
+          setTimeout(removeLastTouch, DEDUP_TIMEOUT);
+      }
+  }
+
+  function isSyntheticEvent(eventData) {
+      var x = eventData.srcEvent.clientX, y = eventData.srcEvent.clientY;
+      for (var i = 0; i < this.lastTouches.length; i++) {
+          var t = this.lastTouches[i];
+          var dx = Math.abs(x - t.x), dy = Math.abs(y - t.y);
+          if (dx <= DEDUP_DISTANCE && dy <= DEDUP_DISTANCE) {
+              return true;
+          }
+      }
+      return false;
+  }
+
   var PREFIXED_TOUCH_ACTION = prefixed(TEST_ELEMENT.style, 'touchAction');
   var NATIVE_TOUCH_ACTION = PREFIXED_TOUCH_ACTION !== undefined;
 
@@ -12357,6 +12399,7 @@ return /******/ (function(modules) { // webpackBootstrap
   var TOUCH_ACTION_NONE = 'none';
   var TOUCH_ACTION_PAN_X = 'pan-x';
   var TOUCH_ACTION_PAN_Y = 'pan-y';
+  var TOUCH_ACTION_MAP = getTouchActionProps();
 
   /**
    * Touch Action
@@ -12381,7 +12424,7 @@ return /******/ (function(modules) { // webpackBootstrap
               value = this.compute();
           }
 
-          if (NATIVE_TOUCH_ACTION && this.manager.element.style) {
+          if (NATIVE_TOUCH_ACTION && this.manager.element.style && TOUCH_ACTION_MAP[value]) {
               this.manager.element.style[PREFIXED_TOUCH_ACTION] = value;
           }
           this.actions = value.toLowerCase().trim();
@@ -12413,11 +12456,6 @@ return /******/ (function(modules) { // webpackBootstrap
        * @param {Object} input
        */
       preventDefaults: function(input) {
-          // not needed with native support for the touchAction property
-          if (NATIVE_TOUCH_ACTION) {
-              return;
-          }
-
           var srcEvent = input.srcEvent;
           var direction = input.offsetDirection;
 
@@ -12428,9 +12466,9 @@ return /******/ (function(modules) { // webpackBootstrap
           }
 
           var actions = this.actions;
-          var hasNone = inStr(actions, TOUCH_ACTION_NONE);
-          var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y);
-          var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X);
+          var hasNone = inStr(actions, TOUCH_ACTION_NONE) && !TOUCH_ACTION_MAP[TOUCH_ACTION_NONE];
+          var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y) && !TOUCH_ACTION_MAP[TOUCH_ACTION_PAN_Y];
+          var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X) && !TOUCH_ACTION_MAP[TOUCH_ACTION_PAN_X];
 
           if (hasNone) {
               //do not prevent defaults if this is a tap gesture
@@ -12499,6 +12537,21 @@ return /******/ (function(modules) { // webpackBootstrap
       }
 
       return TOUCH_ACTION_AUTO;
+  }
+
+  function getTouchActionProps() {
+      if (!NATIVE_TOUCH_ACTION) {
+          return false;
+      }
+      var touchMap = {};
+      var cssSupports = window.CSS && window.CSS.supports;
+      ['auto', 'manipulation', 'pan-y', 'pan-x', 'pan-x pan-y', 'none'].forEach(function(val) {
+
+          // If css.supports is not supported but there is native touch-action assume it supports
+          // all values. This is the case for IE 10 and 11.
+          touchMap[val] = cssSupports ? window.CSS.supports('touch-action', val) : true;
+      });
+      return touchMap;
   }
 
   /**
@@ -13297,7 +13350,7 @@ return /******/ (function(modules) { // webpackBootstrap
   /**
    * @const {string}
    */
-  Hammer.VERSION = '2.0.6';
+  Hammer.VERSION = '2.0.7';
 
   /**
    * default settings
@@ -13428,6 +13481,7 @@ return /******/ (function(modules) { // webpackBootstrap
       this.handlers = {};
       this.session = {};
       this.recognizers = [];
+      this.oldCssProps = {};
 
       this.element = element;
       this.input = createInputInstance(this);
@@ -13606,6 +13660,13 @@ return /******/ (function(modules) { // webpackBootstrap
        * @returns {EventEmitter} this
        */
       on: function(events, handler) {
+          if (events === undefined) {
+              return;
+          }
+          if (handler === undefined) {
+              return;
+          }
+
           var handlers = this.handlers;
           each(splitStr(events), function(event) {
               handlers[event] = handlers[event] || [];
@@ -13621,6 +13682,10 @@ return /******/ (function(modules) { // webpackBootstrap
        * @returns {EventEmitter} this
        */
       off: function(events, handler) {
+          if (events === undefined) {
+              return;
+          }
+
           var handlers = this.handlers;
           each(splitStr(events), function(event) {
               if (!handler) {
@@ -13685,9 +13750,19 @@ return /******/ (function(modules) { // webpackBootstrap
       if (!element.style) {
           return;
       }
+      var prop;
       each(manager.options.cssProps, function(value, name) {
-          element.style[prefixed(element.style, name)] = add ? value : '';
+          prop = prefixed(element.style, name);
+          if (add) {
+              manager.oldCssProps[prop] = element.style[prop];
+              element.style[prop] = value;
+          } else {
+              element.style[prop] = manager.oldCssProps[prop] || '';
+          }
       });
+      if (!add) {
+          manager.oldCssProps = {};
+      }
   }
 
   /**
@@ -17769,6 +17844,7 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.center = document.createElement('div');
     this.dom.left = document.createElement('div');
     this.dom.right = document.createElement('div');
+    this.dom.rightSecond = document.createElement('div');
     this.dom.top = document.createElement('div');
     this.dom.bottom = document.createElement('div');
     this.dom.shadowTop = document.createElement('div');
@@ -17785,11 +17861,13 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.centerContainer.className = 'vis-panel vis-center';
     this.dom.leftContainer.className = 'vis-panel vis-left';
     this.dom.rightContainer.className = 'vis-panel vis-right';
+    this.dom.rightSecondContainer.className = 'vis-panel vis-rightSecond';
     this.dom.top.className = 'vis-panel vis-top';
     this.dom.bottom.className = 'vis-panel vis-bottom';
     this.dom.left.className = 'vis-content';
     this.dom.center.className = 'vis-content';
     this.dom.right.className = 'vis-content';
+    this.dom.rightSecond.className = 'vis-content';
     this.dom.shadowTop.className = 'vis-shadow vis-top';
     this.dom.shadowBottom.className = 'vis-shadow vis-bottom';
     this.dom.shadowTopLeft.className = 'vis-shadow vis-top';
@@ -17803,12 +17881,14 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.root.appendChild(this.dom.centerContainer);
     this.dom.root.appendChild(this.dom.leftContainer);
     this.dom.root.appendChild(this.dom.rightContainer);
+    this.dom.root.appendChild(this.dom.rightSecondContainer);
     this.dom.root.appendChild(this.dom.top);
     this.dom.root.appendChild(this.dom.bottom);
 
     this.dom.centerContainer.appendChild(this.dom.center);
     this.dom.leftContainer.appendChild(this.dom.left);
     this.dom.rightContainer.appendChild(this.dom.right);
+    this.dom.rightSecondContainer.appendChild(this.dom.rightSecond);
 
     this.dom.centerContainer.appendChild(this.dom.shadowTop);
     this.dom.centerContainer.appendChild(this.dom.shadowBottom);
@@ -17816,6 +17896,8 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.leftContainer.appendChild(this.dom.shadowBottomLeft);
     this.dom.rightContainer.appendChild(this.dom.shadowTopRight);
     this.dom.rightContainer.appendChild(this.dom.shadowBottomRight);
+    this.dom.rightSecondContainer.appendChild(this.dom.shadowTopRight);
+    this.dom.rightSecondContainer.appendChild(this.dom.shadowBottomRight);
 
     this.on('rangechange', function () {
       if (this.initialDrawDone === true) {
@@ -17891,9 +17973,11 @@ return /******/ (function(modules) { // webpackBootstrap
       centerContainer: {},
       leftContainer: {},
       rightContainer: {},
+      rightSecondContainer: {},
       center: {},
       left: {},
       right: {},
+      rightSecond: {},
       top: {},
       bottom: {},
       border: {},
@@ -18374,6 +18458,7 @@ return /******/ (function(modules) { // webpackBootstrap
     // calculate border widths
     props.border.left = (dom.centerContainer.offsetWidth - dom.centerContainer.clientWidth) / 2;
     props.border.right = props.border.left;
+    props.border.rightSecond = props.border.right;
     props.border.top = (dom.centerContainer.offsetHeight - dom.centerContainer.clientHeight) / 2;
     props.border.bottom = props.border.top;
     var borderRootHeight = dom.root.offsetHeight - dom.root.clientHeight;
@@ -18384,6 +18469,7 @@ return /******/ (function(modules) { // webpackBootstrap
     if (dom.centerContainer.clientHeight === 0) {
       props.border.left = props.border.top;
       props.border.right = props.border.left;
+      props.border.rightSecond = props.border.right;
     }
     if (dom.root.clientHeight === 0) {
       borderRootWidth = borderRootHeight;
@@ -18394,6 +18480,7 @@ return /******/ (function(modules) { // webpackBootstrap
     props.center.height = dom.center.offsetHeight;
     props.left.height = dom.left.offsetHeight;
     props.right.height = dom.right.offsetHeight;
+    props.rightSecond.height = dom.rightSecond.offsetHeight;
     props.top.height = dom.top.clientHeight || -props.border.top;
     props.bottom.height = dom.bottom.clientHeight || -props.border.bottom;
 
@@ -18412,6 +18499,7 @@ return /******/ (function(modules) { // webpackBootstrap
     props.centerContainer.height = containerHeight;
     props.leftContainer.height = containerHeight;
     props.rightContainer.height = props.leftContainer.height;
+    props.rightSecondContainer.height = props.rightContainer.height;
 
     // calculate the widths of the panels
     props.root.width = dom.root.offsetWidth;
@@ -18419,8 +18507,10 @@ return /******/ (function(modules) { // webpackBootstrap
     props.left.width = dom.leftContainer.clientWidth || -props.border.left;
     props.leftContainer.width = props.left.width;
     props.right.width = dom.rightContainer.clientWidth || -props.border.right;
+    props.rightSecond.width = dom.rightSecondContainer.clientWidth || -props.border.rightSecond;
     props.rightContainer.width = props.right.width;
-    var centerWidth = props.root.width - props.left.width - props.right.width - borderRootWidth;
+    props.rightSecondContainer.width = props.rightSecond.width;
+    var centerWidth = props.root.width - props.left.width - props.right.width - props.rightSecond.width - borderRootWidth;
     props.center.width = centerWidth;
     props.centerContainer.width = centerWidth;
     props.top.width = centerWidth;
@@ -18433,6 +18523,7 @@ return /******/ (function(modules) { // webpackBootstrap
     dom.centerContainer.style.height = props.centerContainer.height + 'px';
     dom.leftContainer.style.height = props.leftContainer.height + 'px';
     dom.rightContainer.style.height = props.rightContainer.height + 'px';
+    dom.rightSecondContainer.style.height = props.rightSecondContainer.height + 'px';
 
     dom.background.style.width = props.background.width + 'px';
     dom.backgroundVertical.style.width = props.centerContainer.width + 'px';
@@ -18454,6 +18545,8 @@ return /******/ (function(modules) { // webpackBootstrap
     dom.leftContainer.style.top = props.top.height + 'px';
     dom.rightContainer.style.left = props.left.width + props.center.width + 'px';
     dom.rightContainer.style.top = props.top.height + 'px';
+    dom.rightSecondContainer.style.left = props.left.width + props.center.width + props.right.width + 'px';
+    dom.rightSecondContainer.style.top = props.top.height + 'px';
     dom.top.style.left = props.left.width + 'px';
     dom.top.style.top = '0';
     dom.bottom.style.left = props.left.width + 'px';
@@ -18474,6 +18567,8 @@ return /******/ (function(modules) { // webpackBootstrap
     dom.left.style.top = offset + 'px';
     dom.right.style.left = '0';
     dom.right.style.top = offset + 'px';
+    dom.rightSecond.style.left = '0';
+    dom.rightSecond.style.top = offset + 'px';
 
     // show shadows when vertical scrolling is available
     var visibilityTop = this.props.scrollTop == 0 ? 'hidden' : '';

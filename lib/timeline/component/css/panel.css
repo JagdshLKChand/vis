@@ -12,13 +12,20 @@
 .vis-panel.vis-left,
 .vis-panel.vis-right,
 .vis-panel.vis-top,
-.vis-panel.vis-bottom {
+.vis-panel.vis-bottom,
+.vis-panel.vis-rightSecond {
   border: 1px #bfbfbf;
 }
 
+.vis-panel.vis-right,
+.vis-panel.vis-rightSecond {
+   width: 100px;
+ }
+
 .vis-panel.vis-center,
 .vis-panel.vis-left,
-.vis-panel.vis-right {
+.vis-panel.vis-right,
+.vis-panel.vis-rightSecond {
   border-top-style: solid;
   border-bottom-style: solid;
   overflow: hidden;
