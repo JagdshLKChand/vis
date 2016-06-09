@@ -21673,9 +21673,12 @@ return /******/ (function(modules) { // webpackBootstrap
       content = this.itemSet.options.groupTemplate(data);
     } else {
       content = data && data.content;
-      var contentRight = data && data.content;
-      var contentRightSecond = data && data.content;
+      var contentRight = 'N/A';
+      var contentRightSecond = 'N/A';
     }
+    //setting id for the label
+    this.dom.innerRight.setAttribute("id", content);
+    this.dom.innerRightSecond.setAttribute("id", content);
 
     if (content instanceof Element) {
       this.dom.inner.appendChild(content);
