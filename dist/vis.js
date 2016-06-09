@@ -21928,8 +21928,12 @@ return /******/ (function(modules) { // webpackBootstrap
    */
   Group.prototype.hide = function () {
     var label = this.dom.label;
+    var labelRight = this.dom.labelRight;
+    var labelRightSecond = this.dom.labelRightSecond;
     if (label.parentNode) {
       label.parentNode.removeChild(label);
+      labelRight.parentNode.removeChild(labelRight);
+      labelRightSecond.parentNode.removeChild(labelRightSecond);
     }
 
     var foreground = this.dom.foreground;
