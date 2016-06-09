@@ -21677,8 +21677,7 @@ return /******/ (function(modules) { // webpackBootstrap
       var contentRightSecond = 'N/A';
     }
     //setting id for the label
-    this.dom.innerRight.setAttribute("id", content);
-    this.dom.innerRightSecond.setAttribute("id", content);
+    this.dom.innerRight.setAttribute("id", data && data.id);
 
     if (content instanceof Element) {
       this.dom.inner.appendChild(content);
