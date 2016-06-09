@@ -5,7 +5,7 @@
  * A dynamic, browser-based visualization library.
  *
  * @version 4.16.1
- * @date    2016-06-08
+ * @date    2016-06-09
  *
  * @license
  * Copyright (C) 2011-2016 Almende B.V, http://almende.com
@@ -19061,8 +19061,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // create labelset
     var labelSet = document.createElement('div');
+    var labelSetRight = document.createElement('div');
+    var labelSetRightSecond = document.createElement('div');
     labelSet.className = 'vis-labelset';
+    labelSetRight.className = 'vis-labelset';
+    labelSetRightSecond.className = 'vis-labelset';
     this.dom.labelSet = labelSet;
+    this.dom.labelSetRight = labelSetRight;
+    this.dom.labelSetRightSecond = labelSetRightSecond;
 
     // create ungrouped Group
     this._updateUngrouped();
@@ -19290,6 +19296,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // remove the labelset containing all group labels
     if (this.dom.labelSet.parentNode) {
       this.dom.labelSet.parentNode.removeChild(this.dom.labelSet);
+      this.dom.labelSet.parentNode.removeChild(this.dom.labelSetRight);
+      this.dom.labelSet.parentNode.removeChild(this.dom.labelSetRightSecond);
     }
   };
 
@@ -19311,6 +19319,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // show labelset containing labels
     if (!this.dom.labelSet.parentNode) {
       this.body.dom.left.appendChild(this.dom.labelSet);
+      this.body.dom.right.appendChild(this.dom.labelSetRight);
+      this.body.dom.rightSecond.appendChild(this.dom.labelSetRightSecond);
     }
   };
 
@@ -21602,17 +21612,35 @@ return /******/ (function(modules) { // webpackBootstrap
    */
   Group.prototype._create = function () {
     var label = document.createElement('div');
+    var labelRight = document.createElement('div');
+    var labelRightSecond = document.createElement('div');
+
     if (this.itemSet.options.groupEditable.order) {
       label.className = 'vis-label draggable';
+      labelRight.className = 'vis-label draggable';
+      labelRightSecond.className = 'vis-label draggable';
     } else {
       label.className = 'vis-label';
+      labelRight.className = 'vis-label';
+      labelRightSecond.className = 'vis-label';
     }
     this.dom.label = label;
+    this.dom.labelRight = labelRight;
+    this.dom.labelRightSecond = labelRightSecond;
 
     var inner = document.createElement('div');
+    var innerRight = document.createElement('div');
+    var innerRightSecond = document.createElement('div');
     inner.className = 'vis-inner';
+    innerRight.className = 'vis-inner';
+    innerRightSecond.className = 'vis-inner';
+
     label.appendChild(inner);
+    labelRight.appendChild(innerRight);
+    labelRightSecond.appendChild(innerRightSecond);
     this.dom.inner = inner;
+    this.dom.innerRight = innerRight;
+    this.dom.innerRightSecond = innerRightSecond;
 
     var foreground = document.createElement('div');
     foreground.className = 'vis-group';
@@ -21645,18 +21673,31 @@ return /******/ (function(modules) { // webpackBootstrap
       content = this.itemSet.options.groupTemplate(data);
     } else {
       content = data && data.content;
+      var contentRight = data && data.content;
+      var contentRightSecond = data && data.content;
     }
 
     if (content instanceof Element) {
       this.dom.inner.appendChild(content);
+      this.dom.innerRight.appendChild(contentRight);
+      this.dom.innerRightSecond.appendChild(contentRightSecond);
+
       while (this.dom.inner.firstChild) {
         this.dom.inner.removeChild(this.dom.inner.firstChild);
+        this.dom.innerRight.removeChild(this.dom.innerRight.firstChild);
+        this.dom.innerRightSecond.removeChild(this.dom.innerRightSecond.firstChild);
       }
       this.dom.inner.appendChild(content);
+      this.dom.innerRight.appendChild(contentRight);
+      this.dom.innerRightSecond.appendChild(contentRightSecond);
     } else if (content !== undefined && content !== null) {
       this.dom.inner.innerHTML = content;
+      this.dom.innerRight.innerHTML = contentRight;
+      this.dom.innerRightSecond.innerHTML = contentRightSecond;
     } else {
       this.dom.inner.innerHTML = this.groupId || ''; // groupId can be null
+      this.dom.innerRight.innerHTML = this.groupId || '';
+      this.dom.innerRightSecond.innerHTML = this.groupId || '';
     }
 
     // update title
@@ -21666,6 +21707,8 @@ return /******/ (function(modules) { // webpackBootstrap
       util.addClassName(this.dom.inner, 'vis-hidden');
     } else {
       util.removeClassName(this.dom.inner, 'vis-hidden');
+      util.removeClassName(this.dom.innerRight, 'vis-hidden');
+      util.removeClassName(this.dom.innerRightSecond, 'vis-hidden');
     }
 
     // update className
@@ -21687,10 +21730,14 @@ return /******/ (function(modules) { // webpackBootstrap
     // update style
     if (this.style) {
       util.removeCssText(this.dom.label, this.style);
+      util.removeCssText(this.dom.labelRight, this.style);
+      util.removeCssText(this.dom.labelRightSecond, this.style);
       this.style = null;
     }
     if (data && data.style) {
       util.addCssText(this.dom.label, data.style);
+      util.addCssText(this.dom.labelRight, data.style);
+      util.addCssText(this.dom.labelRightSecond, data.style);
       this.style = data.style;
     }
   };
@@ -21786,6 +21833,8 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.background.style.height = height + 'px';
     this.dom.foreground.style.height = height + 'px';
     this.dom.label.style.height = height + 'px';
+    this.dom.labelRight.style.height = height + 'px';
+    this.dom.labelRightSecond.style.height = height + 'px';
 
     // update vertical position of items after they are re-stacked and the height of the group is calculated
     for (var i = 0, ii = this.visibleItems.length; i < ii; i++) {
@@ -21855,6 +21904,8 @@ return /******/ (function(modules) { // webpackBootstrap
   Group.prototype.show = function () {
     if (!this.dom.label.parentNode) {
       this.itemSet.dom.labelSet.appendChild(this.dom.label);
+      this.itemSet.dom.labelSetRight.appendChild(this.dom.labelRight);
+      this.itemSet.dom.labelSetRightSecond.appendChild(this.dom.labelRightSecond);
     }
 
     if (!this.dom.foreground.parentNode) {
