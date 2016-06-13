@@ -19054,6 +19054,12 @@ return /******/ (function(modules) { // webpackBootstrap
     frame.appendChild(foreground);
     this.dom.foreground = foreground;
 
+    //Empty Box
+    var emptyElement = document.createElement('div');
+    emptyElement.id = "Empty_Box";
+    emptyElement.className = "vis-item vis-range vis-editable";
+    this.dom.foreground.appendChild(emptyElement);
+
     // create axis panel
     var axis = document.createElement('div');
     axis.className = 'vis-axis';
@@ -23879,10 +23885,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
     this.dom.foreground.className = 'vis-time-axis vis-foreground';
     this.dom.background.className = 'vis-time-axis vis-background';
-
-    var emptyElement = document.createElement('div');
-    emptyElement.id = "Empty_Box";
-    this.dom.foreground.appendChild(emptyElement);
   };
 
   /**
