@@ -5,7 +5,7 @@
  * A dynamic, browser-based visualization library.
  *
  * @version 4.16.1
- * @date    2016-06-09
+ * @date    2016-06-13
  *
  * @license
  * Copyright (C) 2011-2016 Almende B.V, http://almende.com
@@ -22422,6 +22422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
       // background box
       dom.box = document.createElement('div');
+      dom.box.id = 'New_Id';
       // className is updated in redraw()
 
       // frame box (to prevent the item contents from overflowing
