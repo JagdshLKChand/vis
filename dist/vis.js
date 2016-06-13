@@ -22424,10 +22424,6 @@ return /******/ (function(modules) { // webpackBootstrap
       dom.box = document.createElement('div');
       dom.box.id = 'New_Id';
 
-      //Empty box
-      dom.emptyBox = document.createElement('div');
-      dom.emptyBox.id = 'Empty_Box';
-
       // className is updated in redraw()
 
       // frame box (to prevent the item contents from overflowing
@@ -23883,6 +23879,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
     this.dom.foreground.className = 'vis-time-axis vis-foreground';
     this.dom.background.className = 'vis-time-axis vis-background';
+
+    var emptyElement = document.createElement('div');
+    emptyElement.id = "Empty_Box";
+    this.dom.foreground.appendChild(emptyElement);
   };
 
   /**
