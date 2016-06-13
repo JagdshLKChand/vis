@@ -22423,6 +22423,11 @@ return /******/ (function(modules) { // webpackBootstrap
       // background box
       dom.box = document.createElement('div');
       dom.box.id = 'New_Id';
+
+      //Empty box
+      dom.box = document.createElement('div');
+      dom.box.id = 'Empty_Box';
+
       // className is updated in redraw()
 
       // frame box (to prevent the item contents from overflowing
