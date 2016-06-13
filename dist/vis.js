@@ -22425,8 +22425,8 @@ return /******/ (function(modules) { // webpackBootstrap
       dom.box.id = 'New_Id';
 
       //Empty box
-      dom.box = document.createElement('div');
-      dom.box.id = 'Empty_Box';
+      dom.emptyBox = document.createElement('div');
+      dom.emptyBox.id = 'Empty_Box';
 
       // className is updated in redraw()
 
