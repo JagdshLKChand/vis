@@ -22422,13 +22422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
       // background box
       dom.box = document.createElement('div');
-      dom.box.id = 'New_Id';
-
-      //Empty Box
-      var emptyElement = document.createElement('div');
-      emptyElement.id = "Empty_element";
-      emptyElement.className = "vis-item vis-range vis-editable";
-      dom.box.appendChild(emptyElement);
+      dom.box.id = 'New_Item_Id';
 
       // className is updated in redraw()
 
