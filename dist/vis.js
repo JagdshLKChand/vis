@@ -5,7 +5,7 @@
  * A dynamic, browser-based visualization library.
  *
  * @version 4.16.1
- * @date    2016-06-13
+ * @date    2016-06-14
  *
  * @license
  * Copyright (C) 2011-2016 Almende B.V, http://almende.com
@@ -19054,12 +19054,6 @@ return /******/ (function(modules) { // webpackBootstrap
     frame.appendChild(foreground);
     this.dom.foreground = foreground;
 
-    //Empty Box
-    var emptyElement = document.createElement('div');
-    emptyElement.id = "Empty_Box";
-    emptyElement.className = "vis-item vis-range vis-editable";
-    this.dom.foreground.appendChild(emptyElement);
-
     // create axis panel
     var axis = document.createElement('div');
     axis.className = 'vis-axis';
@@ -22429,6 +22423,12 @@ return /******/ (function(modules) { // webpackBootstrap
       // background box
       dom.box = document.createElement('div');
       dom.box.id = 'New_Id';
+
+      //Empty Box
+      var emptyElement = document.createElement('div');
+      emptyElement.id = "Empty_element";
+      emptyElement.className = "vis-item vis-range vis-editable";
+      dom.box.appendChild(emptyElement);
 
       // className is updated in redraw()
 
