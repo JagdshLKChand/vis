@@ -22423,7 +22423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
       // background box
       dom.box = document.createElement('div');
-      dom.box.id = this.dataId;
+      dom.box.id = "ItemRange_" + this.dataId;
 
       // className is updated in redraw()
 
