@@ -5,7 +5,7 @@
  * A dynamic, browser-based visualization library.
  *
  * @version 4.16.1
- * @date    2016-06-14
+ * @date    2016-06-21
  *
  * @license
  * Copyright (C) 2011-2016 Almende B.V, http://almende.com
@@ -22391,6 +22391,7 @@ return /******/ (function(modules) { // webpackBootstrap
       if (data.end == undefined) {
         throw new Error('Property "end" missing in item ' + data.id);
       }
+      this.dataId = data.id;
     }
 
     Item.call(this, data, conversion, options);
@@ -22422,7 +22423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
       // background box
       dom.box = document.createElement('div');
-      dom.box.id = 'New_Item_Id';
+      dom.box.id = this.dataId;
 
       // className is updated in redraw()
 
