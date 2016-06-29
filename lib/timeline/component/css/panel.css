@@ -12,15 +12,21 @@
 .vis-panel.vis-left,
 .vis-panel.vis-right,
 .vis-panel.vis-top,
-.vis-panel.vis-bottom,
-.vis-panel.vis-rightSecond {
+.vis-panel.vis-bottom {
   border: 1px #bfbfbf;
 }
 
-.vis-panel.vis-right,
-.vis-panel.vis-rightSecond {
-   width: 100px;
+.vis-panel.vis-right {
+   width: 200px;
+   display: flex;
  }
+
+.vis-content.vis-InnerRightOne,
+.vis-content.vis-InnerRightTwo {
+  width: 100px;
+  border: 1px #bfbfbf;
+  border-right-style: solid;
+}
 
 .vis-panel.vis-background.vis-vertical {
   border: 1px #bfbfbf;
@@ -30,20 +36,11 @@
 
 .vis-panel.vis-center,
 .vis-panel.vis-left,
-.vis-panel.vis-right,
-.vis-panel.vis-rightSecond {
+.vis-panel.vis-right {
   border-top-style: solid;
   border-bottom-style: solid;
-  border-right-style: solid;
   overflow: hidden;
 }
-/*
-.vis-panel.vis-center,
-.vis-panel.vis-top,
-.vis-panel.vis-bottom {
-  border-left-style: solid;
-  border-right-style: solid;
-}*/
 
 .vis-background {
   overflow: hidden;

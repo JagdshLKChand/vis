@@ -17840,11 +17840,10 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.centerContainer = document.createElement('div');
     this.dom.leftContainer = document.createElement('div');
     this.dom.rightContainer = document.createElement('div');
-    this.dom.rightSecondContainer = document.createElement('div');
     this.dom.center = document.createElement('div');
     this.dom.left = document.createElement('div');
-    this.dom.right = document.createElement('div');
-    this.dom.rightSecond = document.createElement('div');
+    this.dom.innerRightOne = document.createElement('div');
+    this.dom.innerRightTwo = document.createElement('div');
     this.dom.top = document.createElement('div');
     this.dom.bottom = document.createElement('div');
     this.dom.shadowTop = document.createElement('div');
@@ -17861,13 +17860,12 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.centerContainer.className = 'vis-panel vis-center';
     this.dom.leftContainer.className = 'vis-panel vis-left';
     this.dom.rightContainer.className = 'vis-panel vis-right';
-    this.dom.rightSecondContainer.className = 'vis-panel vis-rightSecond';
     this.dom.top.className = 'vis-panel vis-top';
     this.dom.bottom.className = 'vis-panel vis-bottom';
     this.dom.left.className = 'vis-content';
     this.dom.center.className = 'vis-content';
-    this.dom.right.className = 'vis-content';
-    this.dom.rightSecond.className = 'vis-content';
+    this.dom.innerRightOne.className = 'vis-content vis-InnerRightOne';
+    this.dom.innerRightTwo.className = 'vis-content vis-InnerRightTwo';
     this.dom.shadowTop.className = 'vis-shadow vis-top';
     this.dom.shadowBottom.className = 'vis-shadow vis-bottom';
     this.dom.shadowTopLeft.className = 'vis-shadow vis-top';
@@ -17881,14 +17879,13 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.root.appendChild(this.dom.centerContainer);
     this.dom.root.appendChild(this.dom.leftContainer);
     this.dom.root.appendChild(this.dom.rightContainer);
-    this.dom.root.appendChild(this.dom.rightSecondContainer);
     this.dom.root.appendChild(this.dom.top);
     this.dom.root.appendChild(this.dom.bottom);
 
     this.dom.centerContainer.appendChild(this.dom.center);
     this.dom.leftContainer.appendChild(this.dom.left);
-    this.dom.rightContainer.appendChild(this.dom.right);
-    this.dom.rightSecondContainer.appendChild(this.dom.rightSecond);
+    this.dom.rightContainer.appendChild(this.dom.innerRightOne);
+    this.dom.rightContainer.appendChild(this.dom.innerRightTwo);
 
     this.dom.centerContainer.appendChild(this.dom.shadowTop);
     this.dom.centerContainer.appendChild(this.dom.shadowBottom);
@@ -17896,8 +17893,6 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.leftContainer.appendChild(this.dom.shadowBottomLeft);
     this.dom.rightContainer.appendChild(this.dom.shadowTopRight);
     this.dom.rightContainer.appendChild(this.dom.shadowBottomRight);
-    this.dom.rightSecondContainer.appendChild(this.dom.shadowTopRight);
-    this.dom.rightSecondContainer.appendChild(this.dom.shadowBottomRight);
 
     this.on('rangechange', function () {
       if (this.initialDrawDone === true) {
@@ -17973,11 +17968,10 @@ return /******/ (function(modules) { // webpackBootstrap
       centerContainer: {},
       leftContainer: {},
       rightContainer: {},
-      rightSecondContainer: {},
       center: {},
       left: {},
-      right: {},
-      rightSecond: {},
+      innerRightOne: {},
+      innerRightTwo: {},
       top: {},
       bottom: {},
       border: {},
@@ -18457,8 +18451,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // calculate border widths
     props.border.left = (dom.centerContainer.offsetWidth - dom.centerContainer.clientWidth) / 2;
-    props.border.right = props.border.left;
-    props.border.rightSecond = props.border.right;
+    props.border.innerRightOne = props.border.left;
+    props.border.innerRightTwo = props.border.innerRightOne;
     props.border.top = (dom.centerContainer.offsetHeight - dom.centerContainer.clientHeight) / 2;
     props.border.bottom = props.border.top;
     var borderRootHeight = dom.root.offsetHeight - dom.root.clientHeight;
@@ -18468,8 +18462,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // a height:0px and overflow:hidden is not calculated and always has value 0
     if (dom.centerContainer.clientHeight === 0) {
       props.border.left = props.border.top;
-      props.border.right = props.border.left;
-      props.border.rightSecond = props.border.right;
+      props.border.innerRightOne = props.border.left;
+      props.border.innerRightTwo = props.border.innerRightTwo;
     }
     if (dom.root.clientHeight === 0) {
       borderRootWidth = borderRootHeight;
@@ -18479,8 +18473,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // minus the border width, such that the border will be invisible
     props.center.height = dom.center.offsetHeight;
     props.left.height = dom.left.offsetHeight;
-    props.right.height = dom.right.offsetHeight;
-    props.rightSecond.height = dom.rightSecond.offsetHeight;
+    props.innerRightOne.height = dom.innerRightOne.offsetHeight;
+    props.innerRightTwo.height = dom.innerRightTwo.offsetHeight;
     props.top.height = 44 || -props.border.top;
     props.bottom.height = dom.bottom.clientHeight || -props.border.bottom;
 
@@ -18488,7 +18482,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // apply auto height
     // TODO: only calculate autoHeight when needed (else we cause an extra reflow/repaint of the DOM)
-    var contentHeight = Math.max(props.left.height, props.center.height, props.right.height);
+    var contentHeight = Math.max(props.left.height, props.center.height);
     var autoHeight = props.top.height + contentHeight + props.bottom.height + borderRootHeight + props.border.top + props.border.bottom;
     dom.root.style.height = util.option.asSize(options.height, autoHeight + 'px');
 
@@ -18499,18 +18493,16 @@ return /******/ (function(modules) { // webpackBootstrap
     props.centerContainer.height = containerHeight;
     props.leftContainer.height = containerHeight;
     props.rightContainer.height = props.leftContainer.height;
-    props.rightSecondContainer.height = props.rightContainer.height;
 
     // calculate the widths of the panels
     props.root.width = dom.root.offsetWidth;
     props.background.width = props.root.width - borderRootWidth;
     props.left.width = dom.leftContainer.clientWidth || -props.border.left;
     props.leftContainer.width = props.left.width;
-    props.right.width = dom.rightContainer.clientWidth || -props.border.right;
-    props.rightSecond.width = dom.rightSecondContainer.clientWidth || -props.border.rightSecond;
-    props.rightContainer.width = props.right.width;
-    props.rightSecondContainer.width = props.rightSecond.width;
-    var centerWidth = props.root.width - props.left.width - props.right.width - props.rightSecond.width - borderRootWidth;
+    props.innerRightOne.width = dom.rightContainer.clientWidth || -props.border.innerRightOne;
+    props.innerRightTwo.width = dom.rightContainer.clientWidth || -props.border.innerRightTwo;
+    props.rightContainer.width = props.innerRightOne.width + props.innerRightTwo.width;
+    var centerWidth = props.root.width - props.left.width - props.innerRightOne.width - borderRootWidth;
     props.center.width = centerWidth;
     props.centerContainer.width = centerWidth;
     props.top.width = centerWidth;
@@ -18523,7 +18515,6 @@ return /******/ (function(modules) { // webpackBootstrap
     dom.centerContainer.style.height = props.centerContainer.height + 'px';
     dom.leftContainer.style.height = props.leftContainer.height + 'px';
     dom.rightContainer.style.height = props.rightContainer.height + 'px';
-    dom.rightSecondContainer.style.height = props.rightSecondContainer.height + 'px';
 
     dom.background.style.width = props.background.width + 'px';
     dom.backgroundVertical.style.width = props.centerContainer.width + 'px';
@@ -18545,8 +18536,6 @@ return /******/ (function(modules) { // webpackBootstrap
     dom.leftContainer.style.top = props.top.height + 'px';
     dom.rightContainer.style.left = props.left.width + props.center.width + 'px';
     dom.rightContainer.style.top = props.top.height + 'px';
-    dom.rightSecondContainer.style.left = props.left.width + props.center.width + props.right.width + 'px';
-    dom.rightSecondContainer.style.top = props.top.height + 'px';
     dom.top.style.left = props.left.width + 'px';
     dom.top.style.top = '0';
     dom.bottom.style.left = props.left.width + 'px';
@@ -18565,10 +18554,10 @@ return /******/ (function(modules) { // webpackBootstrap
     dom.center.style.top = offset + 'px';
     dom.left.style.left = '0';
     dom.left.style.top = offset + 'px';
-    dom.right.style.left = '0';
-    dom.right.style.top = offset + 'px';
-    dom.rightSecond.style.left = '0';
-    dom.rightSecond.style.top = offset + 'px';
+    dom.innerRightOne.style.left = '0';
+    dom.innerRightOne.style.top = offset + 'px';
+    dom.innerRightTwo.style.left = '0';
+    dom.innerRightTwo.style.top = offset + 'px';
 
     // show shadows when vertical scrolling is available
     var visibilityTop = this.props.scrollTop == 0 ? 'hidden' : '';
@@ -19060,15 +19049,15 @@ return /******/ (function(modules) { // webpackBootstrap
     this.dom.axis = axis;
 
     // create labelset
-    var labelSet = document.createElement('div');
-    var labelSetRight = document.createElement('div');
-    var labelSetRightSecond = document.createElement('div');
-    labelSet.className = 'vis-labelset';
-    labelSetRight.className = 'vis-labelset';
-    labelSetRightSecond.className = 'vis-labelset';
-    this.dom.labelSet = labelSet;
-    this.dom.labelSetRight = labelSetRight;
-    this.dom.labelSetRightSecond = labelSetRightSecond;
+    var leftLabelSet = document.createElement('div');
+    var innerRightOneLabelSet = document.createElement('div');
+    var innerRightTwoLabelSet = document.createElement('div');
+    leftLabelSet.className = 'vis-labelset';
+    innerRightOneLabelSet.className = 'vis-labelset';
+    innerRightTwoLabelSet.className = 'vis-labelset';
+    this.dom.leftLabelSet = leftLabelSet;
+    this.dom.innerRightOneLabelSet = innerRightOneLabelSet;
+    this.dom.innerRightTwoLabelSet = innerRightTwoLabelSet;
 
     // create ungrouped Group
     this._updateUngrouped();
@@ -19294,10 +19283,10 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     // remove the labelset containing all group labels
-    if (this.dom.labelSet.parentNode) {
-      this.dom.labelSet.parentNode.removeChild(this.dom.labelSet);
-      this.dom.labelSet.parentNode.removeChild(this.dom.labelSetRight);
-      this.dom.labelSet.parentNode.removeChild(this.dom.labelSetRightSecond);
+    if (this.dom.leftLabelSet.parentNode) {
+      this.dom.leftLabelSet.parentNode.removeChild(this.dom.leftLabelSet);
+      this.dom.leftLabelSet.parentNode.removeChild(this.dom.innerRightOneLabelSet);
+      this.dom.leftLabelSet.parentNode.removeChild(this.dom.innerRightTwoLabelSet);
     }
   };
 
@@ -19317,10 +19306,10 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     // show labelset containing labels
-    if (!this.dom.labelSet.parentNode) {
-      this.body.dom.left.appendChild(this.dom.labelSet);
-      this.body.dom.right.appendChild(this.dom.labelSetRight);
-      this.body.dom.rightSecond.appendChild(this.dom.labelSetRightSecond);
+    if (!this.dom.leftLabelSet.parentNode) {
+      this.body.dom.left.appendChild(this.dom.leftLabelSet);
+      this.body.dom.innerRightOne.appendChild(this.dom.innerRightOneLabelSet);
+      this.body.dom.innerRightTwo.appendChild(this.dom.innerRightTwoLabelSet);
     }
   };
 
@@ -19569,7 +19558,7 @@ return /******/ (function(modules) { // webpackBootstrap
    * @return {HTMLElement} labelSet
    */
   ItemSet.prototype.getLabelSet = function () {
-    return this.dom.labelSet;
+    return this.dom.leftLabelSet;
   };
 
   /**
@@ -21582,7 +21571,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
     this.dom = {};
     this.props = {
-      label: {
+      leftLabel: {
         width: 0,
         height: 0
       }
@@ -21611,36 +21600,36 @@ return /******/ (function(modules) { // webpackBootstrap
    * @private
    */
   Group.prototype._create = function () {
-    var label = document.createElement('div');
-    var labelRight = document.createElement('div');
-    var labelRightSecond = document.createElement('div');
+    var leftLabel = document.createElement('div');
+    var innerRightOneLabel = document.createElement('div');
+    var innerRightTwoLabel = document.createElement('div');
 
     if (this.itemSet.options.groupEditable.order) {
-      label.className = 'vis-label draggable';
-      labelRight.className = 'vis-label draggable';
-      labelRightSecond.className = 'vis-label draggable';
+      leftLabel.className = 'vis-label draggable';
+      innerRightOneLabel.className = 'vis-label draggable';
+      innerRightTwoLabel.className = 'vis-label draggable';
     } else {
-      label.className = 'vis-label';
-      labelRight.className = 'vis-label';
-      labelRightSecond.className = 'vis-label';
+      leftLabel.className = 'vis-label';
+      innerRightOneLabel.className = 'vis-label';
+      innerRightTwoLabel.className = 'vis-label';
     }
-    this.dom.label = label;
-    this.dom.labelRight = labelRight;
-    this.dom.labelRightSecond = labelRightSecond;
+    this.dom.leftLabel = leftLabel;
+    this.dom.innerRightOneLabel = innerRightOneLabel;
+    this.dom.innerRightTwoLabel = innerRightTwoLabel;
 
-    var inner = document.createElement('div');
-    var innerRight = document.createElement('div');
-    var innerRightSecond = document.createElement('div');
-    inner.className = 'vis-inner';
-    innerRight.className = 'vis-inner';
-    innerRightSecond.className = 'vis-inner';
+    var leftInner = document.createElement('div');
+    var innerRightOne = document.createElement('div');
+    var innerRightTwo = document.createElement('div');
+    leftInner.className = 'vis-inner';
+    innerRightOne.className = 'vis-inner';
+    innerRightTwo.className = 'vis-inner';
 
-    label.appendChild(inner);
-    labelRight.appendChild(innerRight);
-    labelRightSecond.appendChild(innerRightSecond);
-    this.dom.inner = inner;
-    this.dom.innerRight = innerRight;
-    this.dom.innerRightSecond = innerRightSecond;
+    leftLabel.appendChild(leftInner);
+    innerRightOneLabel.appendChild(innerRightOne);
+    innerRightTwoLabel.appendChild(innerRightTwo);
+    this.dom.leftInner = leftInner;
+    this.dom.innerRightOne = innerRightOne;
+    this.dom.innerRightTwo = innerRightTwo;
 
     var foreground = document.createElement('div');
     foreground.className = 'vis-group';
@@ -21669,60 +21658,64 @@ return /******/ (function(modules) { // webpackBootstrap
   Group.prototype.setData = function (data) {
     // update contents
     var content;
+    var innerRightOneDefaultContent;
+    var innerRightTwoDefaultContent;
     if (this.itemSet.options && this.itemSet.options.groupTemplate) {
       content = this.itemSet.options.groupTemplate(data);
     } else {
       content = data && data.content;
-      var contentRight = 'N/A';
-      var contentRightSecond = 'N/A';
+      innerRightOneDefaultContent = 'N/A';
+      innerRightTwoDefaultContent = 'N/A';
     }
+
     //setting id for the label
-    this.dom.innerRight.setAttribute("id", data && data.id);
+    this.dom.innerRightOne.setAttribute("id", data && "RightOne_" + data.id);
+    this.dom.innerRightTwo.setAttribute("id", data && "RightTwo_" + data.id);
 
     if (content instanceof Element) {
-      this.dom.inner.appendChild(content);
-      this.dom.innerRight.appendChild(contentRight);
-      this.dom.innerRightSecond.appendChild(contentRightSecond);
+      this.dom.leftInner.appendChild(content);
+      this.dom.innerRightOne.appendChild(innerRightOneDefaultContent);
+      this.dom.innerRightTwo.appendChild(innerRightTwoDefaultContent);
 
-      while (this.dom.inner.firstChild) {
-        this.dom.inner.removeChild(this.dom.inner.firstChild);
-        this.dom.innerRight.removeChild(this.dom.innerRight.firstChild);
-        this.dom.innerRightSecond.removeChild(this.dom.innerRightSecond.firstChild);
+      while (this.dom.leftInner.firstChild) {
+        this.dom.leftInner.removeChild(this.dom.leftInner.firstChild);
+        this.dom.innerRightOne.removeChild(this.dom.innerRightOne.firstChild);
+        this.dom.innerRightTwo.removeChild(this.dom.innerRightTwo.firstChild);
       }
-      this.dom.inner.appendChild(content);
-      this.dom.innerRight.appendChild(contentRight);
-      this.dom.innerRightSecond.appendChild(contentRightSecond);
+      this.dom.leftInner.appendChild(content);
+      this.dom.innerRightOne.appendChild(innerRightOneDefaultContent);
+      this.dom.innerRightTwo.appendChild(innerRightTwoDefaultContent);
     } else if (content !== undefined && content !== null) {
-      this.dom.inner.innerHTML = content;
-      this.dom.innerRight.innerHTML = contentRight;
-      this.dom.innerRightSecond.innerHTML = contentRightSecond;
+      this.dom.leftInner.innerHTML = content;
+      this.dom.innerRightOne.innerHTML = innerRightOneDefaultContent;
+      this.dom.innerRightTwo.innerHTML = innerRightTwoDefaultContent;
     } else {
-      this.dom.inner.innerHTML = this.groupId || ''; // groupId can be null
-      this.dom.innerRight.innerHTML = this.groupId || '';
-      this.dom.innerRightSecond.innerHTML = this.groupId || '';
+      this.dom.leftInner.innerHTML = this.groupId || ''; // groupId can be null
+      this.dom.innerRightOne.innerHTML = this.groupId || '';
+      this.dom.innerRightTwo.innerHTML = this.groupId || '';
     }
 
     // update title
-    this.dom.label.title = data && data.title || '';
+    this.dom.leftLabel.title = data && data.title || '';
 
-    if (!this.dom.inner.firstChild) {
-      util.addClassName(this.dom.inner, 'vis-hidden');
+    if (!this.dom.leftInner.firstChild) {
+      util.addClassName(this.dom.leftInner, 'vis-hidden');
     } else {
-      util.removeClassName(this.dom.inner, 'vis-hidden');
-      util.removeClassName(this.dom.innerRight, 'vis-hidden');
-      util.removeClassName(this.dom.innerRightSecond, 'vis-hidden');
+      util.removeClassName(this.dom.leftInner, 'vis-hidden');
+      util.removeClassName(this.dom.innerRightOne, 'vis-hidden');
+      util.removeClassName(this.dom.innerRightTwo, 'vis-hidden');
     }
 
     // update className
     var className = data && data.className || null;
     if (className != this.className) {
       if (this.className) {
-        util.removeClassName(this.dom.label, this.className);
+        util.removeClassName(this.dom.leftLabel, this.className);
         util.removeClassName(this.dom.foreground, this.className);
         util.removeClassName(this.dom.background, this.className);
         util.removeClassName(this.dom.axis, this.className);
       }
-      util.addClassName(this.dom.label, className);
+      util.addClassName(this.dom.leftLabel, className);
       util.addClassName(this.dom.foreground, className);
       util.addClassName(this.dom.background, className);
       util.addClassName(this.dom.axis, className);
@@ -21731,15 +21724,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // update style
     if (this.style) {
-      util.removeCssText(this.dom.label, this.style);
-      util.removeCssText(this.dom.labelRight, this.style);
-      util.removeCssText(this.dom.labelRightSecond, this.style);
+      util.removeCssText(this.dom.leftLabel, this.style);
+      util.removeCssText(this.dom.innerRightOneLabel, this.style);
+      util.removeCssText(this.dom.innerRightTwoLabel, this.style);
       this.style = null;
     }
     if (data && data.style) {
-      util.addCssText(this.dom.label, data.style);
-      util.addCssText(this.dom.labelRight, data.style);
-      util.addCssText(this.dom.labelRightSecond, data.style);
+      util.addCssText(this.dom.leftLabel, data.style);
+      util.addCssText(this.dom.innerRightOneLabel, data.style);
+      util.addCssText(this.dom.innerRightTwoLabel, data.style);
       this.style = data.style;
     }
   };
@@ -21749,7 +21742,7 @@ return /******/ (function(modules) { // webpackBootstrap
    * @return {number} width
    */
   Group.prototype.getLabelWidth = function () {
-    return this.props.label.width;
+    return this.props.leftLabel.width;
   };
 
   /**
@@ -21828,15 +21821,15 @@ return /******/ (function(modules) { // webpackBootstrap
     this.width = foreground.offsetWidth;
     resized = util.updateProperty(this, 'height', height) || resized;
     // recalculate size of label
-    resized = util.updateProperty(this.props.label, 'width', this.dom.inner.clientWidth) || resized;
-    resized = util.updateProperty(this.props.label, 'height', this.dom.inner.clientHeight) || resized;
+    resized = util.updateProperty(this.props.leftLabel, 'width', this.dom.leftInner.clientWidth) || resized;
+    resized = util.updateProperty(this.props.leftLabel, 'height', this.dom.leftInner.clientHeight) || resized;
 
     // apply new height
     this.dom.background.style.height = height + 'px';
     this.dom.foreground.style.height = height + 'px';
-    this.dom.label.style.height = height + 'px';
-    this.dom.labelRight.style.height = height + 'px';
-    this.dom.labelRightSecond.style.height = height + 'px';
+    this.dom.leftLabel.style.height = height + 'px';
+    this.dom.innerRightOneLabel.style.height = height + 'px';
+    this.dom.innerRightTwoLabel.style.height = height + 'px';
 
     // update vertical position of items after they are re-stacked and the height of the group is calculated
     for (var i = 0, ii = this.visibleItems.length; i < ii; i++) {
@@ -21895,7 +21888,7 @@ return /******/ (function(modules) { // webpackBootstrap
     } else {
       height = 0;
     }
-    height = Math.max(height, this.props.label.height);
+    height = Math.max(height, this.props.leftLabel.height);
 
     return height;
   };
@@ -21904,10 +21897,10 @@ return /******/ (function(modules) { // webpackBootstrap
    * Show this group: attach to the DOM
    */
   Group.prototype.show = function () {
-    if (!this.dom.label.parentNode) {
-      this.itemSet.dom.labelSet.appendChild(this.dom.label);
-      this.itemSet.dom.labelSetRight.appendChild(this.dom.labelRight);
-      this.itemSet.dom.labelSetRightSecond.appendChild(this.dom.labelRightSecond);
+    if (!this.dom.leftLabel.parentNode) {
+      this.itemSet.dom.leftLabelSet.appendChild(this.dom.leftLabel);
+      this.itemSet.dom.innerRightOneLabelSet.appendChild(this.dom.innerRightOneLabel);
+      this.itemSet.dom.innerRightTwoLabelSet.appendChild(this.dom.innerRightTwoLabel);
     }
 
     if (!this.dom.foreground.parentNode) {
@@ -21927,13 +21920,13 @@ return /******/ (function(modules) { // webpackBootstrap
    * Hide this group: remove from the DOM
    */
   Group.prototype.hide = function () {
-    var label = this.dom.label;
-    var labelRight = this.dom.labelRight;
-    var labelRightSecond = this.dom.labelRightSecond;
-    if (label.parentNode) {
-      label.parentNode.removeChild(label);
-      labelRight.parentNode.removeChild(labelRight);
-      labelRightSecond.parentNode.removeChild(labelRightSecond);
+    var leftLabel = this.dom.leftLabel;
+    var innerRightOneLabel = this.dom.innerRightOneLabel;
+    var innerRightTwoLabel = this.dom.innerRightTwoLabel;
+    if (leftLabel.parentNode) {
+      leftLabel.parentNode.removeChild(leftLabel);
+      innerRightOneLabel.parentNode.removeChild(innerRightOneLabel);
+      innerRightTwoLabel.parentNode.removeChild(innerRightTwoLabel);
     }
 
     var foreground = this.dom.foreground;
