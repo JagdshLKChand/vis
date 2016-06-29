@@ -21,11 +21,20 @@
    display: flex;
  }
 
-.vis-content.vis-InnerRightOne,
-.vis-content.vis-InnerRightTwo {
+.vis-content.vis-rightCenterOne,
+.vis-content.vis-rightCenterTwo {
   width: 100px;
   border: 1px #bfbfbf;
   border-right-style: solid;
+}
+
+.vis-rightTitleOne,
+.vis-rightTitleTwo {
+    height: 43px;
+    position: relative;
+    border: 1px #bfbfbf;
+    border-right-style: solid;
+    border-bottom-style: solid;
 }
 
 .vis-panel.vis-background.vis-vertical {
