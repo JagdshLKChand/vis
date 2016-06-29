@@ -5,7 +5,7 @@
  * A dynamic, browser-based visualization library.
  *
  * @version 4.16.1
- * @date    2016-06-21
+ * @date    2016-06-29
  *
  * @license
  * Copyright (C) 2011-2016 Almende B.V, http://almende.com
@@ -18481,7 +18481,7 @@ return /******/ (function(modules) { // webpackBootstrap
     props.left.height = dom.left.offsetHeight;
     props.right.height = dom.right.offsetHeight;
     props.rightSecond.height = dom.rightSecond.offsetHeight;
-    props.top.height = dom.top.clientHeight || -props.border.top;
+    props.top.height = 44 || -props.border.top;
     props.bottom.height = dom.bottom.clientHeight || -props.border.bottom;
 
     // TODO: compensate borders when any of the panels is empty.
