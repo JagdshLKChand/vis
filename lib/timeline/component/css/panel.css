@@ -17,13 +17,13 @@
 }
 
 .vis-panel.vis-right {
-   width: 200px;
+   width: 220px;
    display: flex;
  }
 
 .vis-content.vis-rightCenterOne,
 .vis-content.vis-rightCenterTwo {
-  width: 100px;
+  width: 110px;
   border: 1px #bfbfbf;
   border-right-style: solid;
 }
